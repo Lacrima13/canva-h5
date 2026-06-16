@@ -1,96 +1,73 @@
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: "PingFang SC";
-  background: radial-gradient(circle at center, #050510, #000);
-  color: white;
+body{
+margin:0;
+overflow:hidden;
+background:radial-gradient(circle at center,#050510,#000);
+font-family:PingFang SC;
+color:white;
 }
 
-/* 🌌 背景 */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  filter: blur(0.2px) contrast(1.3);
+canvas{
+position:fixed;
+top:0;
+left:0;
+filter:blur(0.3px) contrast(1.4);
 }
 
-/* 🧠 UI层 */
-.ui {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* UI */
+.ui{
+position:absolute;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+transition:1s;
 }
 
-/* 🌫️ 玻璃核心卡片 */
-.card {
-  width: 380px;
-  padding: 26px;
-  border-radius: 20px;
-
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(30px);
-
-  border: 1px solid rgba(255,255,255,0.12);
-
-  box-shadow:
-    0 0 120px rgba(0,200,255,0.08),
-    inset 0 0 30px rgba(255,255,255,0.05);
-
-  animation: float 6s ease-in-out infinite;
+.title h1{
+font-size:52px;
+letter-spacing:12px;
+background:linear-gradient(90deg,#00c6ff,#ff00cc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
-/* 🌊 呼吸浮动 */
-@keyframes float {
-  0% { transform: translateY(-6px); }
-  50% { transform: translateY(6px); }
-  100% { transform: translateY(-6px); }
+.panel{
+width:380px;
+padding:22px;
+border-radius:20px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(30px);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 0 120px rgba(0,200,255,0.08);
 }
 
-/* ✨ 标题 */
-h1 {
-  text-align:center;
-  font-size:42px;
-  letter-spacing:8px;
-
-  background: linear-gradient(90deg,#00c6ff,#ff00cc);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+button{
+margin:5px;
+padding:10px 14px;
+border-radius:999px;
+border:none;
+cursor:pointer;
+background:rgba(120,120,255,0.2);
+color:white;
 }
 
-/* 🔘 按钮 */
-button {
-  margin:6px;
-  padding:10px 14px;
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
-  color:white;
-
-  background: rgba(120,120,255,0.2);
-  transition:0.3s;
+button:hover{
+transform:scale(1.08);
+background:rgba(120,200,255,0.4);
 }
 
-button:hover {
-  transform:scale(1.1);
-  background: rgba(120,200,255,0.4);
+.main{
+width:100%;
+background:linear-gradient(90deg,#00c6ff,#0072ff);
 }
 
-/* 🚀 主按钮 */
-.main {
-  width:100%;
-  background: linear-gradient(90deg,#00c6ff,#0072ff);
-}
-
-/* 📡 输出 */
-#output {
-  margin-top:15px;
-  font-size:13px;
-  line-height:1.6;
-  opacity:0.9;
-
-  border-left:2px solid rgba(0,200,255,0.4);
-  padding-left:10px;
+#output{
+margin-top:10px;
+font-size:13px;
+line-height:1.6;
+opacity:0.85;
+border-left:2px solid rgba(0,200,255,0.5);
+padding-left:10px;
 }
