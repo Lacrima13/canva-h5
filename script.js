@@ -1,107 +1,117 @@
 const canvas=document.getElementById("bg");
 const ctx=canvas.getContext("2d");
 
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+const video=document.getElementById("video");
 
 let mood="calm";
-let immersion=false;
 
-const world={
-calm:{c:"0,220,255",s:0.4},
-anxiety:{c:"255,80,160",s:1.6},
-tired:{c:"180,180,180",s:0.3},
-chaos:{c:"255,0,200",s:2.2}
+/* 🌈 AI情绪映射 */
+const emotionMap={
+happy:"calm",
+neutral:"calm",
+sad:"tired",
+angry:"chaos",
+fearful:"anxiety",
+disgusted:"chaos",
+surprised:"anxiety"
 };
 
-let mouse={x:0,y:0};
+const colorMap={
+calm:"0,220,255",
+tired:"180,180,180",
+chaos:"255,0,200",
+anxiety:"255,80,160"
+};
 
-window.addEventListener("mousemove",e=>{
-mouse.x=e.clientX;
-mouse.y=e.clientY;
-});
+/* 🤖 初始化摄像头 */
+async function startVideo(){
+const stream=await navigator.mediaDevices.getUserMedia({video:true});
+video.srcObject=stream;
+}
+startVideo();
 
-function setMood(m){mood=m;}
+/* 🤖 加载AI模型 */
+async function loadAI(){
+await faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/models");
+await faceapi.nets.faceExpressionNet.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/models");
 
-function toggleMusic(){
-const m=document.getElementById("music");
-m.paused?m.play():m.pause();
+detect();
+}
+loadAI();
+
+/* 😶 AI识别情绪 */
+async function detect(){
+
+const detection=await faceapi
+.detectSingleFace(video,new faceapi.TinyFaceDetectorOptions())
+withFaceExpressions();
+
+if(detection){
+const expr=detection.expressions;
+const max=Math.max(...Object.values(expr));
+const emotion=Object.keys(expr).find(k=>expr[k]===max);
+
+mood=emotionMap[emotion]||"calm";
+
+document.getElementById("output").innerHTML=
+"AI情绪识别：" + emotion + " → 宇宙状态：" + mood;
 }
 
-function toggleImmersion(){
-immersion=!immersion;
-document.querySelector(".panel").style.display=immersion?"none":"block";
-document.querySelector(".title").style.display=immersion?"none":"block";
+setTimeout(detect,500);
 }
 
-function generate(){
-const e=document.getElementById("energy").value;
-const w=world[mood];
+/* 🌌 粒子系统 */
+let particles=[];
 
-typeWriter(
-`宇宙状态生成完成
-
-情绪：${mood}
-能量：${e}
-
-系统结论：
-现实正在被观测者重构。`
-);
-}
-
-function typeWriter(t){
-let i=0;
-const el=document.getElementById("output");
-el.innerHTML="";
-(function run(){
-if(i<t.length){
-el.innerHTML+=t[i++];
-setTimeout(run,12);
-}
-})();
-}
-
-let p=[];
-for(let i=0;i<350;i++){
-p.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
+for(let i=0;i<400;i++){
+particles.push({
+x:Math.random()*innerWidth,
+y:Math.random()*innerHeight,
 vx:(Math.random()-0.5),
 vy:(Math.random()-0.5)
 });
 }
 
+let mouse={x:0,y:0};
+addEventListener("mousemove",e=>{
+mouse.x=e.clientX;
+mouse.y=e.clientY;
+});
+
+/* 🌊 渲染 */
 function animate(){
 
-const w=world[mood];
-
-ctx.fillStyle=immersion?"rgba(0,0,0,0.06)":"rgba(0,0,0,0.12)";
-ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="rgba(0,0,0,0.08)";
+ctx.fillRect(0,0,innerWidth,innerHeight);
 
 ctx.globalCompositeOperation="lighter";
-ctx.fillStyle=`rgba(${w.c},0.75)`;
 
-p.forEach(o=>{
+ctx.fillStyle=`rgba(${colorMap[mood]},0.7)`;
 
-let dx=mouse.x-o.x;
-let dy=mouse.y-o.y;
+particles.forEach(p=>{
 
-o.vx+=dx*0.00002;
-o.vy+=dy*0.00002;
+let dx=mouse.x-p.x;
+let dy=mouse.y-p.y;
 
-o.vx*=0.96;
-o.vy*=0.96;
+p.vx+=dx*0.00002;
+p.vy+=dy*0.00002;
 
-o.x+=o.vx*w.s;
-o.y+=o.vy*w.s;
+p.vx*=0.96;
+p.vy*=0.96;
 
-if(o.x<0)o.x=canvas.width;
-if(o.x>canvas.width)o.x=0;
-if(o.y<0)o.y=canvas.height;
-if(o.y>canvas.height)o.y=0;
+p.x+=p.vx;
+p.y+=p.vy;
+
+if(p.x<0)p.x=innerWidth;
+if(p.x>innerWidth)p.x=0;
+if(p.y<0)p.y=innerHeight;
+if(p.y>innerHeight)p.y=0;
 
 ctx.beginPath();
-ctx.arc(o.x,o.y,2.6,0,Math.PI*2);
+ctx.arc(p.x,p.y,2.6,0,Math.PI*2);
 ctx.fill();
 });
 
