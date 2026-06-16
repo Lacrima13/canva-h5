@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>MOOD SCAPE｜情绪生成宇宙</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>MOOD SCAPE ∞</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <canvas id="bg"></canvas>
 
+<audio id="music" loop>
+  <source src="ambient.mp3" type="audio/mp3">
+</audio>
+
 <div class="ui">
 
-  <div class="brand">
-    <h1>MOOD SCAPE</h1>
-    <p>情绪生成宇宙模拟器</p>
+  <div class="title">
+    <h1>MOOD SCAPE ∞</h1>
+    <p>情绪即宇宙 · 观测即创造</p>
   </div>
 
-  <div class="card">
+  <div class="panel">
 
-    <div class="section-title">选择情绪维度</div>
-
-    <div class="moods">
+    <div class="row">
       <button onclick="setMood('calm')">宁静</button>
       <button onclick="setMood('anxiety')">焦虑</button>
       <button onclick="setMood('tired')">疲惫</button>
       <button onclick="setMood('chaos')">混沌</button>
     </div>
 
-    <div class="section-title">能量密度</div>
-    <input id="energy" type="range" min="0" max="100" value="50">
+    <input id="energy" type="range" min="0" max="100">
 
-    <button class="generate" onclick="generateWorld()">
-      生成情绪宇宙
-    </button>
+    <button class="main" onclick="generate()">生成宇宙状态</button>
+
+    <button onclick="toggleImmersion()">进入沉浸模式</button>
+
+    <button onclick="toggleMusic()">音乐</button>
 
     <div id="output"></div>
 
@@ -42,6 +45,5 @@
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
