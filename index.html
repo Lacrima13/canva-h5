@@ -2,54 +2,34 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>MOOD SCAPE ∞ FINAL EXHIBITION</title>
+<title>MOOD SCAPE ∞ EXHIBITION B</title>
 
 <link rel="stylesheet" href="style.css">
+
+<!-- AI -->
 <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
 </head>
 
 <body>
 
 <canvas id="bg"></canvas>
-
 <video id="video" autoplay muted playsinline></video>
 
-<audio id="calmSound" loop src="calm.mp3"></audio>
-<audio id="chaosSound" loop src="chaos.mp3"></audio>
+<!-- 🎧 音频 -->
+<audio id="calm" loop src="calm.mp3"></audio>
+<audio id="chaos" loop src="chaos.mp3"></audio>
 
 <!-- HUD -->
 <div class="hud">
 
-  <div class="cam">🎥 CAMERA: <span id="camStatus">OFF</span></div>
+  <div id="emotion">loading...</div>
+  <div id="direction">direction: neutral</div>
 
-  <div id="emoji">😐</div>
+  <button onclick="generateReport()">生成情绪报告</button>
 
-  <div id="moodText">等待情绪识别...</div>
-
-  <div id="adviceBox"></div>
-
-  <div id="modeText">MODE: NORMAL</div>
-
-</div>
-
-<!-- UI -->
-<div class="ui">
-
-  <div class="title">
-    <h1>MOOD SCAPE ∞</h1>
-    <p>情绪驱动的数字宇宙装置</p>
-  </div>
-
-  <div class="panel">
-
-    <button onclick="toggleMusic()">🎧 音乐</button>
-    <button onclick="toggleImmersion()">🌌 沉浸模式</button>
-
-    <button id="exitBtn" onclick="toggleImmersion()" style="display:none;">
-      EXIT IMMERSION
-    </button>
-
-  </div>
+  <div id="report"></div>
 
 </div>
 
