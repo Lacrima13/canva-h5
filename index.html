@@ -1,0 +1,19 @@
+export const seededRandom = (seed: number) => {
+  let value = seed % 2147483647
+  if (value <= 0) value += 2147483646
+
+  return () => {
+    value = (value * 16807) % 2147483647
+    return (value - 1) / 2147483646
+  }
+}
+
+export const hashParams = (...params: string[]) => {
+  const str = params.join('|')
+  let hash = 0
+  for (let i = 0; i < str.length; i += 1) {
+    hash = (hash << 5) - hash + str.charCodeAt(i)
+    hash |= 0
+  }
+  return Math.abs(hash) + 1
+}

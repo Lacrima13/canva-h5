@@ -1,0 +1,79 @@
+import { useRef } from 'react'
+import { motion } from 'framer-motion'
+import { cityDescriptions, cityKeywords, densityLabels, flowLabels, lightLabels } from '../data/cityTypes'
+import { useCityStore } from '../store/cityStore'
+import { exportNodeAsPng } from '../utils/exportCard'
+
+export const ArchiveCard = () => {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const { archiveId, cityType, density, lightMode, flowMode, regenerateArchive } = useCityStore()
+  const densityValue = density === 'low' ? 32 : density === 'medium' ? 61 : 87
+
+  const handleExport = async () => {
+    if (!cardRef.current) return
+    await exportNodeAsPng(cardRef.current, `${archiveId}.png`)
+  }
+
+  return (
+    <section className="archive-section section-shell" id="archive">
+      <motion.div
+        className="section-heading"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.35 }}
+        transition={{ duration: 0.75 }}
+      >
+        <span className="section-kicker">ARCHIVE CARD</span>
+        <h2>你的城市图谱已生成</h2>
+        <p>这不是一座可以被看见的城市。它只在数据流动、光线偏移和路径交汇的瞬间显形。</p>
+      </motion.div>
+
+      <div className="archive-layout">
+        <div className="archive-card glass-card" ref={cardRef}>
+          <div className="card-header">
+            <span>INVISIBLE CITY ATLAS</span>
+            <strong>{archiveId}</strong>
+          </div>
+          <div className="card-core">
+            <p>城市类型</p>
+            <h3>{cityType}</h3>
+          </div>
+          <div className="metric-grid">
+            <div>
+              <span>密度指数</span>
+              <strong>{densityValue}%</strong>
+            </div>
+            <div>
+              <span>光线状态</span>
+              <strong>{lightLabels[lightMode]}</strong>
+            </div>
+            <div>
+              <span>流动方式</span>
+              <strong>{flowLabels[flowMode]}</strong>
+            </div>
+            <div>
+              <span>密度模式</span>
+              <strong>{densityLabels[density]}</strong>
+            </div>
+          </div>
+          <div className="keyword-row">
+            {cityKeywords[cityType].map((keyword) => (
+              <i key={keyword}>{keyword}</i>
+            ))}
+          </div>
+          <p className="card-description">{cityDescriptions[cityType]}</p>
+        </div>
+
+        <div className="archive-actions">
+          <button className="primary-button" onClick={handleExport} type="button">
+            SAVE ARCHIVE CARD
+          </button>
+          <button className="secondary-button" onClick={regenerateArchive} type="button">
+            重新生成编号
+          </button>
+          <a className="ghost-link" href="#top">返回入口</a>
+        </div>
+      </div>
+    </section>
+  )
+}

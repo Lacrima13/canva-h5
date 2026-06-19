@@ -1,0 +1,90 @@
+import type { DensityLevel, FlowMode, LightMode } from '../store/cityStore'
+import { hashParams, seededRandom } from './randomSeed'
+import { lightPalettes } from '../data/cityTypes'
+
+export interface CityNode {
+  id: number
+  position: [number, number, number]
+  scale: number
+}
+
+export interface CityLine {
+  id: number
+  from: [number, number, number]
+  to: [number, number, number]
+}
+
+export interface CityData {
+  nodes: CityNode[]
+  lines: CityLine[]
+  particleCount: number
+  flowSpeed: number
+  palette: { primary: string; secondary: string; accent: string }
+}
+
+const densityConfig: Record<DensityLevel, { nodes: number; radius: number; height: number; particleCount: number }> = {
+  low: { nodes: 42, radius: 3.4, height: 1.6, particleCount: 450 },
+  medium: { nodes: 86, radius: 4.2, height: 2.4, particleCount: 850 },
+  high: { nodes: 146, radius: 4.8, height: 3.2, particleCount: 1350 },
+}
+
+const flowSpeed: Record<FlowMode, number> = {
+  linear: 0.12,
+  circular: 0.2,
+  random: 0.34,
+}
+
+export const generateCity = (
+  density: DensityLevel,
+  lightMode: LightMode,
+  flowMode: FlowMode,
+): CityData => {
+  const config = densityConfig[density]
+  const random = seededRandom(hashParams(density, lightMode, flowMode))
+  const nodes: CityNode[] = []
+
+  for (let i = 0; i < config.nodes; i += 1) {
+    const angle = flowMode === 'linear' ? (i / config.nodes) * Math.PI * 1.15 : random() * Math.PI * 2
+    const ring = flowMode === 'circular' ? 0.7 + Math.sin(i * 0.45) * 0.25 : random()
+    const radius = config.radius * (0.15 + ring * 0.85)
+    const x = Math.cos(angle) * radius + (random() - 0.5) * 0.55
+    const z = Math.sin(angle) * radius + (random() - 0.5) * 0.55
+    const y = Math.pow(random(), 1.7) * config.height + 0.05
+    nodes.push({ id: i, position: [x, y, z], scale: 0.35 + random() * 1.2 })
+  }
+
+  const lines: CityLine[] = []
+  const maxLinks = density === 'high' ? 3 : density === 'medium' ? 2 : 1
+
+  nodes.forEach((node, index) => {
+    const sorted = [...nodes]
+      .filter((target) => target.id !== node.id)
+      .sort((a, b) => {
+        const da = distance(node.position, a.position)
+        const db = distance(node.position, b.position)
+        return da - db
+      })
+      .slice(0, maxLinks)
+
+    sorted.forEach((target, subIndex) => {
+      if (target.id > index || subIndex === 0) {
+        lines.push({ id: lines.length, from: node.position, to: target.position })
+      }
+    })
+  })
+
+  return {
+    nodes,
+    lines,
+    particleCount: config.particleCount,
+    flowSpeed: flowSpeed[flowMode],
+    palette: lightPalettes[lightMode],
+  }
+}
+
+const distance = (a: [number, number, number], b: [number, number, number]) => {
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  const dz = a[2] - b[2]
+  return Math.sqrt(dx * dx + dy * dy + dz * dz)
+}
